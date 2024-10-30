@@ -1,112 +1,54 @@
 [
     {
-        "title": "Luxury Villa in Beverly Hills",
-        "price": "2500000",
-        "description": "A stunning villa with panoramic city views, spacious interiors, and modern amenities.",
-        "image_url": "https:\/\/i.imgur.com\/sample1.jpg",
-        "bedrooms": 5,
-        "bathrooms": 4,
-        "square_feet": 4500,
-        "location": "Beverly Hills, CA",
-        "contact_email": "contact@luxuryhomes.com"
-    },
-    {
-        "title": "Modern Condo Downtown",
-        "price": "900000",
-        "description": "A stylish condo located in the heart of the city with access to all amenities.",
-        "image_url": "https:\/\/i.imgur.com\/sample2.jpg",
-        "bedrooms": 2,
-        "bathrooms": 2,
-        "square_feet": 1200,
-        "location": "Los Angeles, CA",
-        "contact_email": "info@citycondos.com"
-    },
-    {
-        "title": "Countryside Retreat",
-        "price": "1200000",
-        "description": "A peaceful retreat surrounded by nature, perfect for a getaway.",
-        "image_url": "https:\/\/i.imgur.com\/sample3.jpg",
-        "bedrooms": 4,
-        "bathrooms": 3,
-        "square_feet": 3000,
-        "location": "Aspen, CO",
-        "contact_email": "info@retreats.com"
-    },
-    {
-        "title": "Beachfront Bungalow",
-        "price": "3200000",
-        "description": "A cozy bungalow right on the beach with stunning ocean views.",
-        "image_url": "https:\/\/i.imgur.com\/sample4.jpg",
-        "bedrooms": 3,
-        "bathrooms": 2,
-        "square_feet": 1500,
-        "location": "Malibu, CA",
-        "contact_email": "beachhomes@coastproperties.com"
-    },
-    {
-        "title": "Mountain Lodge",
-        "price": "1800000",
-        "description": "A spacious lodge nestled in the mountains, perfect for winter vacations.",
-        "image_url": "https:\/\/i.imgur.com\/sample5.jpg",
-        "bedrooms": 6,
-        "bathrooms": 5,
-        "square_feet": 5000,
-        "location": "Lake Tahoe, CA",
-        "contact_email": "lodge@mountainretreats.com"
-    },
-    {
-        "title": "Penthouse Suite",
-        "price": "4500000",
-        "description": "Top-floor penthouse with breathtaking city skyline views.",
-        "image_url": "https:\/\/i.imgur.com\/sample6.jpg",
-        "bedrooms": 3,
-        "bathrooms": 3,
-        "square_feet": 2000,
-        "location": "New York, NY",
-        "contact_email": "luxury@penthouses.com"
-    },
-    {
+        "id": "1",
         "title": "Historic Mansion",
         "price": "5500000",
         "description": "A grand mansion with rich history and beautiful architecture.",
-        "image_url": "https:\/\/i.imgur.com\/sample7.jpg",
+        "image_url": "https://i.imgur.com/sample7.jpg",
         "bedrooms": 8,
         "bathrooms": 7,
         "square_feet": 8000,
         "location": "Savannah, GA",
-        "contact_email": "mansion@historichomes.com"
+        "contact_email": "mansion@historichomes.com",
+        "status": "available"
     },
     {
+        "id": "2",
         "title": "ajaj",
         "price": "",
         "description": "",
-        "image_url": "https:\/\/i.imgur.com\/45RURgS.jpeg",
+        "image_url": "https://i.imgur.com/45RURgS.jpeg",
         "bedrooms": "",
         "bathrooms": "",
         "square_feet": "",
         "location": "",
-        "contact_email": ""
+        "contact_email": "",
+        "status": "hold"
     },
     {
+        "id": "3",
         "title": "llla",
         "price": 0,
         "description": "",
-        "image_url": "https:\/\/i.imgur.com\/Wo94nWx.jpeg",
+        "image_url": "https://i.imgur.com/Wo94nWx.jpeg",
         "bedrooms": 0,
         "bathrooms": 0,
         "square_feet": 0,
         "location": "",
-        "contact_email": ""
+        "contact_email": "",
+        "status": "sold"
     },
     {
+        "id": "4",
         "title": "kjwska",
         "price": 221.99,
         "description": "sad",
-        "image_url": "https:\/\/i.imgur.com\/aU94iAB.jpeg",
+        "image_url": "https://i.imgur.com/aU94iAB.jpeg",
         "bedrooms": 34,
         "bathrooms": 2,
         "square_feet": 1,
         "location": "44",
-        "contact_email": "44@d.c"
+        "contact_email": "44@d.c",
+        "status": "available"
     }
 ]

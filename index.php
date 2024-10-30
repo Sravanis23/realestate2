@@ -12,6 +12,11 @@ if ($listings === null) {
     $listings = [];
 }
 
+function generateUniqueId($length = 8) {
+    return substr(str_shuffle(str_repeat('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / 62))), 1, $length);
+}
+
+
 // Function to save listings
 function saveListing($newListing) {
     global $listings, $file_path;
@@ -48,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Collect form data
         $newListing = [
-            "title" => $_POST['title'],
+            'id' => generateUniqueId(), // Add this line to generate a unique ID
+            "title" => $_POST['title'] ?? '',
             "price" => !empty($_POST['price']) ? (float)$_POST['price'] : 0, // Set default to 0 if empty
             "description" => $_POST['description'] ?? '', // Default to empty string if not set
             "image_url" => $imgUrl,
@@ -57,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "square_feet" => !empty($_POST['square_feet']) ? (int)$_POST['square_feet'] : 0, // Default to 0 if empty
             "location" => $_POST['location'] ?? '', // Default to empty string if not set
             "contact_email" => $_POST['contact_email'] ?? '', // Default to empty string if not set
+            'status' => "available", // Ensure you have a status field
+
         ];
 
         // Use try-catch to handle exceptions when formatting the price
@@ -89,6 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         html {
             scroll-behavior: smooth;
         }
+        .status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
+}
         .carousel-item img {
             width: 100%; /* Full width */
             height: auto; /* Maintain aspect ratio */
@@ -224,6 +238,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="image-container">
                         <img src="<?= htmlspecialchars($listing['image_url']) ?>" class="card-img-top" alt="Listing Image">
                     </div>
+                    <!-- Status Display -->
+    <div class="status" style="background-color: <?php 
+        echo ($listing['status'] == 'available') ? 'green' : 
+             (($listing['status'] == 'hold') ? 'orange' : 
+             (($listing['status'] == 'sold') ? 'red' : 'transparent')); 
+    ?>;">
+        <p style="color: white; margin: 0;"><?php echo ucfirst($listing['status']); ?></p>
+    </div>
                     <div class="card-body">
                         <h5 class="card-title"><?= htmlspecialchars($listing['title']) ?></h5>
                         <p class="card-text"><strong>Price:</strong> $<?= number_format((float)$listing['price'], 2) ?></p>
@@ -235,6 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <li><strong>Square Feet:</strong> <?= number_format((int)($listing['square_feet'] ?? 0)) ?> sqft</li>
                         </ul>
                         <p><strong>Contact:</strong> <a href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a></p>
+                         
                     </div>
                 </div>
             </div>
