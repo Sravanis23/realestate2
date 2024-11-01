@@ -4,6 +4,25 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
+session_start();
+
+// Define inactivity limit (15 minutes in seconds)
+define('INACTIVITY_LIMIT', 900);
+
+// Redirect to login if the user is not logged in or if the session has expired
+if (!isset($_SESSION['username']) || 
+    (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > INACTIVITY_LIMIT))) {
+    
+    // Clear the session and redirect to app.php with a message if session expired
+    session_unset();
+    session_destroy();
+    header("Location: app.php?message=Please log in to access this page.");
+    exit;
+}
+
+// Update last activity time for inactivity check
+$_SESSION['LAST_ACTIVITY'] = time();
+
 // Load existing listings from database.json
 $file_path = __DIR__ . '/database.json';
 $listings = file_exists($file_path) ? json_decode(file_get_contents($file_path), true) : [];
@@ -196,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const location = listings[i].querySelector('.location').textContent.toLowerCase();
 
                 if (title.includes(searchInput) || description.includes(searchInput) || location.includes(
-                    searchInput)) {
+                        searchInput)) {
                     listings[i].style.display = 'block';
                 } else {
                     listings[i].style.display = 'none';
@@ -335,58 +354,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
 
-
         <div class="d-flex justify-content-between align-items-center my-3">
             <input type="text" id="searchInput" class="form-control me-2" placeholder="Search listings..."
-                onkeyup="searchListings()" style="border-radius: 20px; border: 2px solid transparent; 
-               background: linear-gradient(white, white), linear-gradient(to right, #6a11cb, #2575fc); 
-               background-clip: padding-box, border-box; 
-               padding: 10px;">
+                onkeyup="searchListings()" style="border-radius: 40px; border: 1px solid transparent; 
+        background: linear-gradient(white, white), linear-gradient(to right, #ff0000, #2575fc); 
+        background-clip: padding-box, border-box; 
+        padding: 10px;">
 
             <button class="btn" data-bs-toggle="modal" data-bs-target="#addListingModal" style="border-radius: 20px; 
-               background: linear-gradient(to right, #6a11cb, #2575fc); 
-               color: white; border: none; padding: 10px 15px;">
+        background: linear-gradient(to right, #ff0000, #2575fc); 
+        color: white; border: none; padding: 10px 15px;">
                 <i class="bi bi-plus-lg"></i>
             </button>
         </div>
+
 
         <br>
 
         <!-- Listings Display -->
         <div class="row">
-    <?php foreach ($listings as $listing): ?>
-    <div class="col-md-3 mb-4 listing-card"> <!-- Change to col-md-3 for smaller cards -->
-        <div class="card h-100 shadow-sm" style="width: 100%; padding: 0.5rem;"> <!-- Add padding to reduce size -->
-            <div class="image-container">
-                <img src="<?= htmlspecialchars($listing['image_url']) ?>" class="card-img-top"
-                     alt="Listing Image" style="height: 150px; object-fit: cover;"> <!-- Adjust image height -->
-            </div>
-            <!-- Status Display -->
-            <div class="status" style="
+            <?php foreach ($listings as $listing): ?>
+            <div class="col-md-3 mb-4 listing-card">
+                <!-- Change to col-md-3 for smaller cards -->
+                <div class="card h-100 shadow-sm" style="width: 100%; padding: 0.5rem;">
+                    <!-- Add padding to reduce size -->
+                    <div class="image-container">
+                        <img src="<?= htmlspecialchars($listing['image_url']) ?>" class="card-img-top"
+                            alt="Listing Image" style="height: 150px; object-fit: cover;"> <!-- Adjust image height -->
+                    </div>
+                    <!-- Status Display -->
+                    <div class="status" style="
     <?php 
         echo ($listing['status'] == 'available') ? 'background: linear-gradient(to right, #aae6cf, #28a745);' : 
         (($listing['status'] == 'hold') ? 'background: linear-gradient(to right, #6ec1e4, #1a73e8);' : 
         (($listing['status'] == 'sold') ? 'background: linear-gradient(to right, #ffccbc, #dc3545);' : 'background: transparent;')); 
     ?>
 ">
-    <p style="color: white; margin: 0;"><?php echo ucfirst($listing['status']); ?></p>
-</div>
-            <div class="card-body" style="padding: 0.5rem;"> <!-- Reduce padding -->
-                <h5 class="card-title" style="font-size: 1.25rem;"><?= htmlspecialchars($listing['title']) ?></h5>
-                <p class="card-text" style="font-size: 0.9rem;"><strong>Price:</strong> $<?= number_format((float)$listing['price'], 2) ?></p>
-                <p class="card-text" style="font-size: 0.9rem;"><?= htmlspecialchars($listing['description']) ?></p>
-                <ul class="list-unstyled" style="font-size: 0.9rem;">
-                    <li class="location"><strong>Location:</strong> <?= htmlspecialchars($listing['location']) ?></li>
-                    <li><strong>Bedrooms:</strong> <?= (int)($listing['bedrooms'] ?? 0) ?></li>
-                    <li><strong>Bathrooms:</strong> <?= (int)($listing['bathrooms'] ?? 0) ?></li>
-                    <li><strong>Square Feet:</strong> <?= number_format((int)($listing['square_feet'] ?? 0)) ?> sqft</li>
-                </ul>
-                <p style="font-size: 0.9rem;"><strong>Contact:</strong> <a href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a></p>
+                        <p style="color: white; margin: 0;"><?php echo ucfirst($listing['status']); ?></p>
+                    </div>
+                    <div class="card-body" style="padding: 0.5rem;">
+                        <!-- Reduce padding -->
+                        <h5 class="card-title" style="font-size: 1.25rem;"><?= htmlspecialchars($listing['title']) ?>
+                        </h5>
+                        <p class="card-text" style="font-size: 0.9rem;"><strong>Price:</strong>
+                            $<?= number_format((float)$listing['price'], 2) ?></p>
+                        <p class="card-text" style="font-size: 0.9rem;"><?= htmlspecialchars($listing['description']) ?>
+                        </p>
+                        <ul class="list-unstyled" style="font-size: 0.9rem;">
+                            <li class="location"><strong>Location:</strong>
+                                <?= htmlspecialchars($listing['location']) ?></li>
+                            <li><strong>Bedrooms:</strong> <?= (int)($listing['bedrooms'] ?? 0) ?></li>
+                            <li><strong>Bathrooms:</strong> <?= (int)($listing['bathrooms'] ?? 0) ?></li>
+                            <li><strong>Square Feet:</strong> <?= number_format((int)($listing['square_feet'] ?? 0)) ?>
+                                sqft</li>
+                        </ul>
+                        <p style="font-size: 0.9rem;"><strong>Contact:</strong> <a
+                                href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a>
+                        </p>
+                    </div>
+                </div>
             </div>
+            <?php endforeach; ?>
         </div>
-    </div>
-    <?php endforeach; ?>
-</div>
 
     </div>
 
