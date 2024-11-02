@@ -6,6 +6,13 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 session_start();
 
+if (isset($_POST['logout'])) {
+    // Destroy the session and redirect to login page
+    session_unset();
+    session_destroy();
+    header("Location: app.php?message=You have been logged out.");
+    exit;
+}
 // Define inactivity limit (15 minutes in seconds)
 define('INACTIVITY_LIMIT', 900);
 
@@ -104,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "location" => $_POST['location'] ?? '', // Default to empty string if not set
             "contact_email" => $_POST['contact_email'] ?? '', // Default to empty string if not set
             'status' => "available", // Ensure you have a status field
+            'addedby' => $_SESSION['username']
 
         ];
 
@@ -122,6 +130,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         die("Please upload an image.");
     }
+}
+
+
+// Handle delete listing request
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    $listingId = $data['id'] ?? null;
+    $currentUser = $_SESSION['username'] ?? null;
+
+    // Find and remove the listing by ID, ensuring it's added by the current user
+    $listings = array_filter($listings, function ($listing) use ($listingId, $currentUser) {
+        return $listing['id'] !== $listingId || $listing['addedby'] !== $currentUser;
+    });
+
+    // Save the updated listings back to the JSON file
+    file_put_contents($file_path, json_encode(array_values($listings), JSON_PRETTY_PRINT));
+
+    echo json_encode(["success" => true]);
+    exit;
 }
 ?>
 
@@ -222,6 +249,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
+
+
+
+        const serverFilePath = "<?php echo $_SERVER['PHP_SELF']; ?>";
+
+        function deleteListing(listingId) {
+            if (!confirm("Are you sure you want to delete this listing?")) return;
+
+            fetch(serverFilePath, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: listingId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Listing deleted successfully.");
+                        document.querySelector(`[data-id="${listingId}"]`).remove();
+                    } else {
+                        alert(data.message || "Failed to delete listing.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
     </script>
 </head>
 
@@ -247,6 +302,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a class="nav-link" href="#footer">Contact Us</a>
                     </li>
                 </ul>
+                &nbsp
+                <form action="" method="POST" class="d-inline">
+                        <button type="submit" name="logout" class="btn btn-outline-danger btn-sm">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -374,7 +433,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Listings Display -->
         <div class="row">
             <?php foreach ($listings as $listing): ?>
-            <div class="col-md-3 mb-4 listing-card">
+            <div class="col-md-3 mb-4 listing-card" data-id="<?= htmlspecialchars($listing['id']) ?>">
                 <!-- Change to col-md-3 for smaller cards -->
                 <div class="card h-100 shadow-sm" style="width: 100%; padding: 0.5rem;">
                     <!-- Add padding to reduce size -->
@@ -384,12 +443,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <!-- Status Display -->
                     <div class="status" style="
-    <?php 
-        echo ($listing['status'] == 'available') ? 'background: linear-gradient(to right, #aae6cf, #28a745);' : 
-        (($listing['status'] == 'hold') ? 'background: linear-gradient(to right, #6ec1e4, #1a73e8);' : 
-        (($listing['status'] == 'sold') ? 'background: linear-gradient(to right, #ffccbc, #dc3545);' : 'background: transparent;')); 
-    ?>
-">
+                        <?php 
+                            echo ($listing['status'] == 'available') ? 'background: linear-gradient(to right, #aae6cf, #28a745);' : 
+                            (($listing['status'] == 'hold') ? 'background: linear-gradient(to right, #6ec1e4, #1a73e8);' : 
+                            (($listing['status'] == 'sold') ? 'background: linear-gradient(to right, #ffccbc, #dc3545);' : 'background: transparent;')); 
+                        ?>
+                    ">
                         <p style="color: white; margin: 0;"><?php echo ucfirst($listing['status']); ?></p>
                     </div>
                     <div class="card-body" style="padding: 0.5rem;">
@@ -411,6 +470,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p style="font-size: 0.9rem;"><strong>Contact:</strong> <a
                                 href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a>
                         </p>
+                        <?php if ($listing['addedby'] === $_SESSION['username']): ?>
+                        <button class="btn btn-danger delete-listing"
+                            onclick="deleteListing('<?php echo $listing['id']; ?>')"
+                            style="font-size: 0.8rem; background:lightgray;">
+                            Delete
+                        </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

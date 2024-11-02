@@ -4,51 +4,41 @@
         "title": "Historic Mansion",
         "price": "5500000",
         "description": "A grand mansion with rich history and beautiful architecture.",
-        "image_url": "https://i.imgur.com/sample7.jpg",
+        "image_url": "https:\/\/i.imgur.com\/sample7.jpg",
         "bedrooms": 8,
         "bathrooms": 7,
         "square_feet": 8000,
         "location": "Savannah, GA",
         "contact_email": "mansion@historichomes.com",
-        "status": "available"
+        "status": "available",
+        "addedby": ""
     },
     {
         "id": "2",
         "title": "ajaj",
         "price": "",
         "description": "",
-        "image_url": "https://i.imgur.com/45RURgS.jpeg",
+        "image_url": "https:\/\/i.imgur.com\/45RURgS.jpeg",
         "bedrooms": "",
         "bathrooms": "",
         "square_feet": "",
         "location": "",
         "contact_email": "",
-        "status": "hold"
+        "status": "hold",
+        "addedby": ""
     },
     {
         "id": "3",
         "title": "llla",
         "price": 0,
         "description": "",
-        "image_url": "https://i.imgur.com/Wo94nWx.jpeg",
+        "image_url": "https:\/\/i.imgur.com\/Wo94nWx.jpeg",
         "bedrooms": 0,
         "bathrooms": 0,
         "square_feet": 0,
         "location": "",
         "contact_email": "",
-        "status": "sold"
-    },
-    {
-        "id": "4",
-        "title": "kjwska",
-        "price": 221.99,
-        "description": "sad",
-        "image_url": "https://i.imgur.com/aU94iAB.jpeg",
-        "bedrooms": 34,
-        "bathrooms": 2,
-        "square_feet": 1,
-        "location": "44",
-        "contact_email": "44@d.c",
-        "status": "available"
+        "status": "sold",
+        "addedby": ""
     }
 ]
