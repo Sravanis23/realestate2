@@ -150,6 +150,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     echo json_encode(["success" => true]);
     exit;
 }
+
+
+// Handle status change request
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    $data = json_decode(file_get_contents("php://input"), true);
+    $listingId = $data['id'] ?? null;
+    $newStatus = $data['status'] ?? null;
+    $currentUser = $_SESSION['username'] ?? null;
+
+    if ($listingId && $newStatus && $currentUser) {
+        $updated = false;
+        foreach ($listings as &$listing) {
+            if ($listing['id'] === $listingId && $listing['addedby'] === $currentUser) {
+                $listing['status'] = $newStatus;
+                $updated = true;
+                break;
+            }
+        }
+
+        if ($updated) {
+            // Save the updated listings back to the JSON file
+            file_put_contents($file_path, json_encode(array_values($listings), JSON_PRETTY_PRINT));
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Listing not found or unauthorized"]);
+        }
+    } else {
+        echo json_encode(["success" => false, "message" => "Invalid request data"]);
+    }
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -168,10 +199,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         }
 
         .status {
-            padding: 5px 10px;
-            border-radius: 5px;
+            border-radius: 0px;
             text-align: center;
-            margin-top: 10px;
+            margin: -1px;
+            font-size: 12px;
         }
 
         .carousel-item img {
@@ -271,11 +302,143 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
                     if (data.success) {
                         alert("Listing deleted successfully.");
                         document.querySelector(`[data-id="${listingId}"]`).remove();
+                        updateStatusCounts();
                     } else {
                         alert(data.message || "Failed to delete listing.");
                     }
                 })
                 .catch(error => console.error('Error:', error));
+        }
+
+
+        function searchListings() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const listings = document.getElementsByClassName('listing-card');
+
+            for (let i = 0; i < listings.length; i++) {
+                const title = listings[i].querySelector('.card-title').textContent.toLowerCase();
+                const description = listings[i].querySelector('.card-text').textContent.toLowerCase();
+                const location = listings[i].querySelector('.location').textContent.toLowerCase();
+
+                if (title.includes(searchInput) || description.includes(searchInput) || location.includes(
+                    searchInput)) {
+                    listings[i].style.display = 'block';
+                } else {
+                    listings[i].style.display = 'none';
+                }
+            }
+        }
+
+        function deleteListing(listingId) {
+            if (!confirm("Are you sure you want to delete this listing?")) return;
+
+            fetch(serverFilePath, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: listingId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Listing deleted successfully.");
+                        document.querySelector(`[data-id="${listingId}"]`).remove();
+                        updateStatusCounts();
+                    } else {
+                        alert(data.message || "Failed to delete listing.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateStatusCounts() {
+            fetch(`${serverFilePath}?action=getStatusCounts`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('availableCount').textContent = data.counts.available;
+                        document.getElementById('holdCount').textContent = data.counts.hold;
+                        document.getElementById('soldCount').textContent = data.counts.sold;
+
+                        const totalListings = data.counts.available + data.counts.hold + data.counts.sold;
+                        document.getElementById('totalListings').textContent = totalListings;
+
+                        updatePercentage('availablePercentage', data.counts.available, totalListings);
+                        updatePercentage('holdPercentage', data.counts.hold, totalListings);
+                        updatePercentage('soldPercentage', data.counts.sold, totalListings);
+                    } else {
+                        console.error('Failed to fetch status counts:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching status counts:', error);
+                });
+        }
+
+        function updatePercentage(elementId, count, total) {
+            const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+            document.getElementById(elementId).textContent = `${percentage}%`;
+        }
+
+        function changeStatus(listingId, newStatus) {
+            fetch(serverFilePath, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: listingId,
+                        status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const listingCard = document.querySelector(`.listing-card[data-id="${listingId}"]`);
+                        const statusDivs = listingCard.querySelectorAll('.status.col');
+
+                        statusDivs.forEach(div => {
+                            const status = div.textContent.trim().toLowerCase();
+                            if (status === newStatus) {
+                                div.style.background = getStatusGradient(newStatus);
+                                div.style.color = 'white';
+                            } else {
+                                div.style.background = 'white';
+                                div.style.border = '0.5px solid black';
+                                div.style.color = 'black';
+                            }
+                        });
+
+                        updateStatusCounts();
+                    } else {
+                        alert('Failed to update status: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the status');
+                });
+        }
+
+        function getStatusGradient(status) {
+            switch (status) {
+                case 'available':
+                    return 'linear-gradient(to right, #aae6cf, #28a745)';
+                case 'hold':
+                    return 'linear-gradient(to right, #6ec1e4, #1a73e8)';
+                case 'sold':
+                    return 'linear-gradient(to right, #ffccbc, #dc3545)';
+                default:
+                    return 'white';
+            }
         }
     </script>
 </head>
@@ -304,7 +467,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
                 </ul>
                 &nbsp
                 <form action="" method="POST" class="d-inline">
-                        <button type="submit" name="logout" class="btn btn-outline-danger btn-sm">Logout</button>
+                    <button type="submit" name="logout" class="btn btn-outline-danger btn-sm">Logout</button>
                 </form>
             </div>
         </div>
@@ -442,15 +605,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
                             alt="Listing Image" style="height: 150px; object-fit: cover;"> <!-- Adjust image height -->
                     </div>
                     <!-- Status Display -->
-                    <div class="status" style="
-                        <?php 
-                            echo ($listing['status'] == 'available') ? 'background: linear-gradient(to right, #aae6cf, #28a745);' : 
-                            (($listing['status'] == 'hold') ? 'background: linear-gradient(to right, #6ec1e4, #1a73e8);' : 
-                            (($listing['status'] == 'sold') ? 'background: linear-gradient(to right, #ffccbc, #dc3545);' : 'background: transparent;')); 
-                        ?>
-                    ">
-                        <p style="color: white; margin: 0;"><?php echo ucfirst($listing['status']); ?></p>
+                    <div class="status d-flex">
+                        <!-- Available Status -->
+                        <div class="status col" style="
+                            <?php 
+                                echo ($listing['status'] == 'available') ? 'background: linear-gradient(to right, #aae6cf, #28a745); color: white;' : 
+                                'background: white; border: 0.5px solid black; color: black;'
+                            ?>
+                            text-align: center; padding: 10px;">
+                                                <p style="margin: 0;">Available</p>
+                                            </div>
+
+                                            <!-- Hold Status -->
+                                            <div class="status col" style="
+                            <?php 
+                                echo ($listing['status'] == 'hold') ? 'background: linear-gradient(to right, #6ec1e4, #1a73e8); color: white;' : 
+                                'background: white; border: 0.5px solid black; color: black;';
+                            ?>
+                            text-align: center; padding: 10px;">
+                                                <p style="margin: 0;">Hold</p>
+                                            </div>
+
+                                            <!-- Sold Status -->
+                                            <div class="status col" style="
+                            <?php 
+                                echo ($listing['status'] == 'sold') ? 'background: linear-gradient(to right, #ffccbc, #dc3545); color: white;' : 
+                                'background: white; border: 0.5px solid black; color: black;';
+                            ?>
+                            text-align: center; padding: 10px;">
+                            <p style="margin: 0;">Sold</p>
+                        </div>
                     </div>
+
                     <div class="card-body" style="padding: 0.5rem;">
                         <!-- Reduce padding -->
                         <h5 class="card-title" style="font-size: 1.25rem;"><?= htmlspecialchars($listing['title']) ?>
@@ -467,20 +653,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
                             <li><strong>Square Feet:</strong> <?= number_format((int)($listing['square_feet'] ?? 0)) ?>
                                 sqft</li>
                         </ul>
+
                         <p style="font-size: 0.9rem;"><strong>Contact:</strong> <a
                                 href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a>
                         </p>
                         <?php if ($listing['addedby'] === $_SESSION['username']): ?>
-                        <button class="btn btn-danger delete-listing"
-                            onclick="deleteListing('<?php echo $listing['id']; ?>')"
-                            style="font-size: 0.8rem; background:lightgray;">
-                            Delete
-                        </button>
+                        <div class="row">
+                            <button class="btn btn-danger delete-listing col"
+                                onclick="deleteListing('<?php echo $listing['id']; ?>')"
+                                style="font-size: 0.8rem; background:lightgray; color:black">
+                                Delete
+                            </button> &nbsp
+                            <select class="col form-select change-status"
+                                onchange="changeStatus('<?php echo $listing['id']; ?>', this.value)"
+                                style="font-size: 0.8rem; width: auto; border: 0.5px solid red">
+                                <option value="available"
+                                    <?php echo $listing['status'] == 'available' ? 'selected' : ''; ?>>Available
+                                </option>
+                                <option value="hold" <?php echo $listing['status'] == 'hold' ? 'selected' : ''; ?>>Hold
+                                </option>
+                                <option value="sold" <?php echo $listing['status'] == 'sold' ? 'selected' : ''; ?>>Sold
+                                </option>
+                            </select>
+                        </div>
+
+
+
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
+
+
         </div>
 
     </div>

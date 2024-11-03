@@ -11,7 +11,7 @@
         "location": "Savannah, GA",
         "contact_email": "mansion@historichomes.com",
         "status": "available",
-        "addedby": ""
+        "addedby": "asassd"
     },
     {
         "id": "2",
@@ -25,7 +25,7 @@
         "location": "",
         "contact_email": "",
         "status": "hold",
-        "addedby": ""
+        "addedby": "asja"
     },
     {
         "id": "3",
@@ -39,6 +39,20 @@
         "location": "",
         "contact_email": "",
         "status": "sold",
-        "addedby": ""
+        "addedby": "jauhau"
+    },
+    {
+        "id": "3fzlc59D",
+        "title": "adad",
+        "price": 22,
+        "description": "43jn",
+        "image_url": "https:\/\/i.imgur.com\/zloYRaR.png",
+        "bedrooms": 112,
+        "bathrooms": 212,
+        "square_feet": 21,
+        "location": "213",
+        "contact_email": "21@edd.fc",
+        "status": "available",
+        "addedby": "adad"
     }
 ]
