@@ -6,6 +6,75 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 session_start();
 
+
+define('USER_DATA_FILE', 'users.json');
+
+// Load users from JSON file
+function load_users() {
+    if (!file_exists(USER_DATA_FILE)) {
+        file_put_contents(USER_DATA_FILE, json_encode([]));
+    }
+    return json_decode(file_get_contents(USER_DATA_FILE), true);
+}
+
+// Load user data by username
+function load_user_data($username) {
+    $users = load_users(); // Load all users
+    return isset($users[$username]) ? $users[$username] : []; // Return user data or empty array
+}
+
+
+
+// Update user data function
+function save_user_data($username, $updatedData) {
+    $users = load_users();
+    
+    // Merge existing data with new data
+    if (isset($users[$username])) {
+        $users[$username] = array_merge($users[$username], array_filter($updatedData, function ($value) {
+            return $value !== null && $value !== '';
+        }));
+        file_put_contents(USER_DATA_FILE, json_encode($users));
+    }
+}
+
+
+
+$userData = load_user_data($_SESSION['username']);
+
+// Set default values for each field to prevent undefined index warnings
+$userData = array_merge([
+    'email' => '',
+    'phone' => '',
+    'address' => ''
+], (array) $userData);
+
+
+$email = htmlspecialchars($userData['email'] ?? "");
+$phone = htmlspecialchars($userData['phone'] ?? "");
+$address = htmlspecialchars($userData['address'] ?? "");
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['username'])) {
+    // Load current user data
+    $userData = load_user_data($_SESSION['username']);
+
+    // Prepare updated data, using existing values where applicable
+    $updatedData = [
+        'email' => isset($_POST['email']) ? $_POST['email'] : (isset($userData['email']) ? $userData['email'] : ''),
+        'phone' => isset($_POST['phone']) ? $_POST['phone'] : (isset($userData['phone']) ? $userData['phone'] : ''),
+        'address' => isset($_POST['address']) ? $_POST['address'] : (isset($userData['address']) ? $userData['address'] : '')
+    ];
+
+    // Save updated user data
+    save_user_data($_SESSION['username'], $updatedData);
+    
+    // Reload the data to reflect the changes
+    $userData = load_user_data($_SESSION['username']);
+    
+    $message = "Profile updated successfully!";
+}
+
+
 if (isset($_POST['logout'])) {
     // Destroy the session and redirect to login page
     session_unset();
@@ -93,6 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         curl_close($ch);
         
         $imgUrl = json_decode($response)->data->link ?? '';
+
         if (!$imgUrl) {
             error_log("Image upload failed: " . $response);
             die("Image upload failed.");
@@ -125,10 +195,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Save new listing and redirect
         saveListing($newListing);
-        header("Location: index.php");
+        header("Location: profile.php");
         exit;
     } else {
-        die("Please upload an image.");
+        header("Location: profile.php");
+        exit;
     }
 }
 
@@ -148,6 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     file_put_contents($file_path, json_encode(array_values($listings), JSON_PRETTY_PRINT));
 
     echo json_encode(["success" => true]);
+    header("Location: profile.php");
     exit;
 }
 
@@ -198,36 +270,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             scroll-behavior: smooth;
         }
 
-        .status {
-            border-radius: 0px;
-            text-align: center;
-            margin: -1px;
-            font-size: 12px;
-        }
-
-        .carousel-item img {
+        .editable-input {
+            border: none;
+            background-color: #f9f9f9;
             width: 100%;
-            /* Full width */
-            height: auto;
-            /* Maintain aspect ratio */
-            max-height: 400px;
-            /* Set a max height for the images */
-            object-fit: cover;
-            /* Cover to fill the space without distortion */
+            padding: 5px;
         }
-
-        .carousel {
-            height: 400px;
-            /* Height of the carousel */
+        .edit-button {
+            cursor: pointer;
         }
-
-        .carousel-caption {
-            bottom: 0;
-            left: 0;
-            text-align: left;
-            padding: 1rem;
-            /* Add some padding for better visibility */
-        }
+       
 
         .bg-grey {
             background-color: rgba(0, 0, 0, 0.5);
@@ -263,7 +315,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         }
     </style>
     <script>
-
+   
 
 
         const serverFilePath = "<?php echo $_SERVER['PHP_SELF']; ?>";
@@ -294,23 +346,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         }
 
 
-        function searchListings() {
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const listings = document.getElementsByClassName('listing-card');
-
-            for (let i = 0; i < listings.length; i++) {
-                const title = listings[i].querySelector('.card-title').textContent.toLowerCase();
-                const description = listings[i].querySelector('.card-text').textContent.toLowerCase();
-                const location = listings[i].querySelector('.location').textContent.toLowerCase();
-
-                if (title.includes(searchInput) || description.includes(searchInput) || location.includes(
-                    searchInput)) {
-                    listings[i].style.display = 'block';
-                } else {
-                    listings[i].style.display = 'none';
-                }
-            }
-        }
 
         function deleteListing(listingId) {
             if (!confirm("Are you sure you want to delete this listing?")) return;
@@ -428,6 +463,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
 <body>
 
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">R E A L - E S T A T E</a>
@@ -438,7 +474,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link" aria-current="page" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#addListingModal">Add
@@ -448,7 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                         <a class="nav-link" href="#footer">Contact Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="profile.php">Profile</a>
+                        <a class="nav-link active" aria-current="page" href="profile.php">Profile</a>
                     </li>
                 </ul>
                 &nbsp
@@ -459,131 +495,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         </div>
     </nav>
 
-    <div id="propertyCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="https://ilead.net.in/wp-content/uploads/2023/04/shutterstock_743951458-2.jpg" class="d-block"
-                    alt="First slide">
-                <div class="carousel-caption" style="bottom: 0; left: 0; text-align: left;">
-                    <div class="bg-grey rounded p-3" style="background-color: rgba(0, 0, 0, 0.5);">
-                        <h5 class="text-white">Find Your Dream Home</h5>
-                        <p class="text-white">Experience luxury living with stunning properties.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="https://www.vidyard.com/media/real-estate-video-marketing-1920x1080-1.jpg" class="d-block"
-                    alt="Second slide">
-                <div class="carousel-caption" style="bottom: 0; left: 0; text-align: left;">
-                    <div class="bg-grey rounded p-3" style="background-color: rgba(0, 0, 0, 0.5);">
-                        <h5 class="text-white">Your Perfect Investment Awaits</h5>
-                        <p class="text-white">Invest in your future with our exclusive listings.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="https://static.rdc.moveaws.com/images/hero/default/2021-11/jpg/hp-hero-desktop.jpg"
-                    class="d-block" alt="Third slide">
-                <div class="carousel-caption" style="bottom: 0; left: 0; text-align: left;">
-                    <div class="bg-grey rounded p-3" style="background-color: rgba(0, 0, 0, 0.5);">
-                        <h5 class="text-white">Make Memories in Your New Home</h5>
-                        <p class="text-white">Your journey to a beautiful home starts here.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-
-    <div class="container my-5">
-        <h4 class="text-center">R &nbsp E &nbsp A &nbsp L &nbsp-&nbsp E &nbsp S &nbsp T &nbsp A &nbsp T &nbsp E
-            &nbsp-&nbsp L &nbsp I &nbsp S &nbsp T &nbsp I &nbsp N &nbsp G &nbsp S</h4>
-
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card text-center mb-4 shadow border-light">
-                        <div class="card-header"
-                            style="background: linear-gradient(to right, #6ec1e4, #1a73e8); color: white;">
-                            <i class="bi bi-hourglass-split" style="font-size: 2rem;"></i> <!-- Bootstrap Icons -->
-                            <h5 class="my-2">Hold</h5>
-                        </div>
-                        <div class="card-body">
-                            <h1 class="card-title display-4"
-                                style="background: linear-gradient(to right, #6ec1e4, #1a73e8); -webkit-background-clip: text; color: transparent;">
-                                <?php echo $statusCounts['hold']; ?>
-                            </h1>
-                            <p class="card-text text-muted">Currently on hold</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card text-center mb-4 shadow border-light">
-                        <div class="card-header"
-                            style="background: linear-gradient(to right, #a8e6cf, #28a745); color: white;">
-                            <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
-                            <h5 class="my-2">Available</h5>
-                        </div>
-                        <div class="card-body">
-                            <h1 class="card-title display-4"
-                                style="background: linear-gradient(to right, #a8e6cf, #28a745); -webkit-background-clip: text; color: transparent;">
-                                <?php echo $statusCounts['available']; ?>
-                            </h1>
-                            <p class="card-text text-muted">Available for purchase</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card text-center mb-4 shadow border-light">
-                        <div class="card-header"
-                            style="background: linear-gradient(to right, #ffccbc, #dc3545); color: white;">
-                            <i class="bi bi-cart-check" style="font-size: 2rem;"></i>
-                            <h5 class="my-2">Sold</h5>
-                        </div>
-                        <div class="card-body">
-                            <h1 class="card-title display-4"
-                                style="background: linear-gradient(to right, #ffccbc, #dc3545); -webkit-background-clip: text; color: transparent;">
-                                <?php echo $statusCounts['sold']; ?>
-                            </h1>
-                            <p class="card-text text-muted">Total sold listings</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-
-        <div class="d-flex justify-content-between align-items-center my-3">
-            <input type="text" id="searchInput" class="form-control me-2" placeholder="Search listings..."
-                onkeyup="searchListings()" style="border-radius: 40px; border: 1px solid transparent; 
-        background: linear-gradient(white, white), linear-gradient(to right, #ff0000, #2575fc); 
-        background-clip: padding-box, border-box; 
-        padding: 10px;">
-
-            <button class="btn" data-bs-toggle="modal" data-bs-target="#addListingModal" style="border-radius: 20px; 
-        background: linear-gradient(to right, #ff0000, #2575fc); 
-        color: white; border: none; padding: 10px 15px;">
-                <i class="bi bi-plus-lg"></i>
-            </button>
-        </div>
-
+  
 
         <br>
 
-        <!-- Listings Display -->
-        <div class="row">
-    <!-- Regular Listings Section -->
+        <div class="container mt-5">
+    <h4>Edit Profile</h4>
+    <?php if (!empty($message)) { echo "<div class='alert alert-success'>$message</div>"; } ?>
+    <form method="POST" action="">
+        <!-- Email -->
+        <div class="form-group row">
+            <label for="email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-8">
+                <input type="email" id="email" name="email" class="form-control editable-input" value="<?= htmlspecialchars($userData['email'] ?? '') ?>" disabled>
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-secondary edit-button" onclick="toggleEdit('email')">Edit</button>
+            </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="form-group row">
+            <label for="phone" class="col-sm-2 col-form-label">Phone</label>
+            <div class="col-sm-8">
+                <input type="text" id="phone" name="phone" class="form-control editable-input" value="<?= htmlspecialchars($userData['phone'] ?? '') ?>" disabled>
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-secondary edit-button" onclick="toggleEdit('phone')">Edit</button>
+            </div>
+        </div>
+
+        <!-- Address -->
+        <div class="form-group row">
+            <label for="address" class="col-sm-2 col-form-label">Address</label>
+            <div class="col-sm-8">
+                <input type="text" id="address" name="address" class="form-control editable-input" value="<?= htmlspecialchars($userData['address'] ?? '') ?>" disabled>
+            </div>
+            <div class="col-sm-2">
+                <button type="button" class="btn btn-secondary edit-button" onclick="toggleEdit('address')">Edit</button>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    function toggleEdit(fieldId) {
+        const field = document.getElementById(fieldId);
+        field.disabled = !field.disabled; // Toggle the disabled property
+        field.focus(); // Focus on the input if enabled
+    }
+</script>
+<br>
+<br>
+    <h4 class="text-center" style="background:lightgray">M Y - L I S T I N G S</h4>
+<br>
+<div class="container">
+<div class="row mt-12 container">
     <?php foreach ($listings as $listing): ?>
-        <?php if ($listing['addedby'] !== $_SESSION['username']): ?>
+        <?php if ($listing['addedby'] === $_SESSION['username']): ?>
             <div class="col-md-3 mb-4 listing-card" data-id="<?= htmlspecialchars($listing['id']) ?>">
                 <div class="card h-100 shadow-sm" style="width: 100%; padding: 0.5rem;">
                     <div class="image-container">
@@ -591,7 +567,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                             alt="Listing Image" style="height: 150px; object-fit: cover;">
                     </div>
                     <div class="status d-flex">
-                        <!-- Status display for available, hold, and sold with styling -->
                         <div class="status col" style="text-align: center; padding: 10px;
                             <?= ($listing['status'] == 'available') ? 'background: linear-gradient(to right, #aae6cf, #28a745); color: white;' : 'background: white; border: 0.5px solid black; color: black;' ?>">
                             <p style="margin: 0;">Available</p>
@@ -616,12 +591,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                             <li><strong>Square Feet:</strong> <?= number_format((int)($listing['square_feet'] ?? 0)) ?> sqft</li>
                         </ul>
                         <p style="font-size: 0.9rem;"><strong>Contact:</strong> <a href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a></p>
+                        <div class="row">
+                            <button class="btn btn-danger delete-listing col"
+                                onclick="deleteListing('<?php echo $listing['id']; ?>')"
+                                style="font-size: 0.8rem; background:lightgray; color:black">
+                                Delete
+                            </button> &nbsp
+                            <select class="col form-select change-status"
+                                onchange="changeStatus('<?php echo $listing['id']; ?>', this.value)"
+                                style="font-size: 0.8rem; width: auto; border: 0.5px solid red">
+                                <option value="available" <?= $listing['status'] == 'available' ? 'selected' : ''; ?>>Available</option>
+                                <option value="hold" <?= $listing['status'] == 'hold' ? 'selected' : ''; ?>>Hold</option>
+                                <option value="sold" <?= $listing['status'] == 'sold' ? 'selected' : ''; ?>>Sold</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
         <?php endif; ?>
     <?php endforeach; ?>
 </div>
+</div>
+
+<!-- My Listings Section -->
+
 
 
     <!-- Modal for Adding Listings -->
@@ -711,7 +704,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             </div>
         </div>
     </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

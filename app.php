@@ -26,15 +26,28 @@ function save_users($users) {
     file_put_contents(USER_DATA_FILE, json_encode($users));
 }
 
-// Signup function
-function signup($username, $password) {
+// Signup function with additional fields
+function signup($username, $password, $email, $phone, $address) {
     $users = load_users();
     
     if (isset($users[$username])) {
         return "Username already exists!";
     }
     
-    $users[$username] = password_hash($password, PASSWORD_DEFAULT);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return "Invalid email format!";
+    }
+
+    if (!preg_match('/^\d{10}$/', $phone)) {
+        return "Invalid phone number! Must be 10 digits.";
+    }
+    
+    $users[$username] = [
+        'password' => password_hash($password, PASSWORD_DEFAULT),
+        'email' => $email,
+        'phone' => $phone,
+        'address' => $address
+    ];
     save_users($users);
     return "Signup successful!";
 }
@@ -43,7 +56,7 @@ function signup($username, $password) {
 function login($username, $password) {
     $users = load_users();
 
-    if (isset($users[$username]) && password_verify($password, $users[$username])) {
+    if (isset($users[$username]) && password_verify($password, $users[$username]['password'])) {
         $_SESSION['username'] = $username;
         $_SESSION['LAST_ACTIVITY'] = time();
         header("Location: index.php");
@@ -56,7 +69,7 @@ function login($username, $password) {
 $message = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['signup'])) {
-        $message = signup($_POST['username'], $_POST['password']);
+        $message = signup($_POST['username'], $_POST['password'], $_POST['email'], $_POST['phone'], $_POST['address']);
     } elseif (isset($_POST['login'])) {
         $message = login($_POST['username'], $_POST['password']);
     }
@@ -85,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body onload="toggleForm('login')">
 
 <div class="container mt-5">
-<h4 class="text-center">R &nbsp E &nbsp A &nbsp L &nbsp-&nbsp E &nbsp S &nbsp T &nbsp A &nbsp T &nbsp E</h4>
+    <h4 class="text-center">R &nbsp E &nbsp A &nbsp L &nbsp-&nbsp E &nbsp S &nbsp T &nbsp A &nbsp T &nbsp E</h4>
     <?php if ($message): ?>
         <div class="alert alert-info"><?php echo $message; ?></div>
     <?php endif; ?>
@@ -102,6 +115,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="signup-password">Password</label>
                     <input type="password" name="password" id="signup-password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" name="email" id="signup-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-phone">Phone</label>
+                    <input type="text" name="phone" id="signup-phone" class="form-control" pattern="\d{10}" required>
+                    <small class="form-text text-muted">Phone number must be 10 digits.</small>
+                </div>
+                <div class="form-group">
+                    <label for="signup-address">Address</label>
+                    <input type="text" name="address" id="signup-address" class="form-control" required>
                 </div>
                 <button type="submit" name="signup" class="btn btn-primary">Sign Up</button>
             </form>

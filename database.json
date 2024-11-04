@@ -54,5 +54,33 @@
         "contact_email": "21@edd.fc",
         "status": "available",
         "addedby": "adad"
+    },
+    {
+        "id": "UrW8bk3A",
+        "title": "qaqa",
+        "price": 12,
+        "description": "jdnq",
+        "image_url": "https:\/\/i.imgur.com\/KvZRnf3.png",
+        "bedrooms": 1,
+        "bathrooms": 1,
+        "square_feet": 121,
+        "location": "132",
+        "contact_email": "qsq@d.cp",
+        "status": "hold",
+        "addedby": "adad"
+    },
+    {
+        "id": "spNzRUIX",
+        "title": "ef",
+        "price": 323,
+        "description": "32",
+        "image_url": "https:\/\/i.imgur.com\/NQDBmrJ.png",
+        "bedrooms": 22,
+        "bathrooms": 22,
+        "square_feet": 22,
+        "location": "2",
+        "contact_email": "22@dd.d",
+        "status": "available",
+        "addedby": "adadd"
     }
 ]
