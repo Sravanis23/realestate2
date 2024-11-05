@@ -103,56 +103,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-info"><?php echo $message; ?></div>
     <?php endif; ?>
 
-    <!-- Signup Form -->
-    <div id="signup-form" class="card mb-3" style="display: none;">
-        <div class="card-body">
-            <h4>Signup</h4>
-            <form method="POST" action="">
-                <div class="form-group">
-                    <label for="signup-username">Username</label>
-                    <input type="text" name="username" id="signup-username" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="signup-password">Password</label>
-                    <input type="password" name="password" id="signup-password" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="signup-email">Email</label>
-                    <input type="email" name="email" id="signup-email" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="signup-phone">Phone</label>
-                    <input type="text" name="phone" id="signup-phone" class="form-control" pattern="\d{10}" required>
-                    <small class="form-text text-muted">Phone number must be 10 digits.</small>
-                </div>
-                <div class="form-group">
-                    <label for="signup-address">Address</label>
-                    <input type="text" name="address" id="signup-address" class="form-control" required>
-                </div>
-                <button type="submit" name="signup" class="btn btn-primary">Sign Up</button>
-            </form>
-            <p class="mt-3">Already have an account? <a href="#" onclick="toggleForm('login')">Click here to login</a></p>
-        </div>
+<!-- Signup Form -->
+<div id="signup-form" class="card shadow-lg border-0 rounded-lg mt-5" style="display: none;">
+    <div class="card-header bg-primary text-white">
+        <h3 class="text-center font-weight-light my-4">Create Account</h3>
     </div>
+    <div class="card-body">
+        <form method="POST" action="">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3 mb-md-0">
+                        <input class="form-control" id="signup-username" name="username" type="text" placeholder="Enter your username" required />
+                        <label for="signup-username">Username</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input class="form-control" id="signup-email" name="email" type="email" placeholder="name@example.com" required />
+                        <label for="signup-email">Email address</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3 mb-md-0">
+                        <input class="form-control" id="signup-password" name="password" type="password" placeholder="Create a password" required />
+                        <label for="signup-password">Password</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3 mb-md-0">
+                        <input class="form-control" id="signup-phone" name="phone" type="tel" placeholder="1234567890" pattern="\d{10}" required />
+                        <label for="signup-phone">Phone number</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-floating mb-3">
+                <input class="form-control" id="signup-address" name="address" type="text" placeholder="Enter your address" required />
+                <label for="signup-address">Address</label>
+            </div>
+            <div class="mt-4 mb-0">
+                <div class="d-grid">
+                    <button class="btn btn-primary btn-block" type="submit" name="signup">Create Account</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-center py-3">
+        <div class="small"><a href="#" onclick="toggleForm('login')">Have an account? Go to login</a></div>
+    </div>
+</div>
 
-    <!-- Login Form -->
-    <div id="login-form" class="card">
-        <div class="card-body">
-            <h4>Login</h4>
-            <form method="POST" action="">
-                <div class="form-group">
-                    <label for="login-username">Username</label>
-                    <input type="text" name="username" id="login-username" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" name="password" id="login-password" class="form-control" required>
-                </div>
-                <button type="submit" name="login" class="btn btn-success">Login</button>
-            </form>
-            <p class="mt-3">Need to create an account? <a href="#" onclick="toggleForm('signup')">Click here</a></p>
-        </div>
+<!-- Login Form -->
+<div id="login-form" class="card shadow-lg border-0 rounded-lg mt-5">
+    <div class="card-header bg-success text-white">
+        <h3 class="text-center font-weight-light my-4">Login</h3>
     </div>
+    <div class="card-body">
+        <form method="POST" action="">
+            <div class="form-floating mb-3">
+                <input class="form-control" id="login-username" name="username" type="text" placeholder="Enter your username" required />
+                <label for="login-username">Username</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input class="form-control" id="login-password" name="password" type="password" placeholder="Password" required />
+                <label for="login-password">Password</label>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" id="inputRememberPassword" type="checkbox" value="" />
+                <label class="form-check-label" for="inputRememberPassword">Remember password</label>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                <a class="small" href="#">Forgot Password?</a>
+                <button class="btn btn-success" type="submit" name="login">Login</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-center py-3">
+        <div class="small"><a href="#" onclick="toggleForm('signup')">Need an account? Sign up!</a></div>
+    </div>
+</div>
 </div>
 
 </body>

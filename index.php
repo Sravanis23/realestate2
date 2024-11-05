@@ -295,22 +295,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
 
         function searchListings() {
-            const searchInput = document.getElementById('searchInput').value.toLowerCase();
-            const listings = document.getElementsByClassName('listing-card');
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const listings = document.getElementsByClassName('listing-card');
 
-            for (let i = 0; i < listings.length; i++) {
-                const title = listings[i].querySelector('.card-title').textContent.toLowerCase();
-                const description = listings[i].querySelector('.card-text').textContent.toLowerCase();
-                const location = listings[i].querySelector('.location').textContent.toLowerCase();
+    for (let i = 0; i < listings.length; i++) {
+        const title = listings[i].querySelector('.card-title').textContent.toLowerCase();
+        const description = listings[i].querySelector('.card-body .card-text:nth-of-type(2)').textContent.toLowerCase();
+        const location = listings[i].querySelector('.list-unstyled li:first-child').textContent.toLowerCase();
+        const price = listings[i].querySelector('.card-body .card-text:first-of-type').textContent.toLowerCase();
+        const bedrooms = listings[i].querySelector('.list-unstyled li:nth-child(2)').textContent.toLowerCase();
+        const bathrooms = listings[i].querySelector('.list-unstyled li:nth-child(3)').textContent.toLowerCase();
+        const squareFeet = listings[i].querySelector('.list-unstyled li:nth-child(4)').textContent.toLowerCase();
 
-                if (title.includes(searchInput) || description.includes(searchInput) || location.includes(
-                    searchInput)) {
-                    listings[i].style.display = 'block';
-                } else {
-                    listings[i].style.display = 'none';
-                }
-            }
+        if (title.includes(searchInput) || 
+            description.includes(searchInput) || 
+            location.includes(searchInput) ||
+            price.includes(searchInput) ||
+            bedrooms.includes(searchInput) ||
+            bathrooms.includes(searchInput) ||
+            squareFeet.includes(searchInput)) {
+            listings[i].style.display = 'block';
+        } else {
+            listings[i].style.display = 'none';
         }
+    }
+}
 
         function deleteListing(listingId) {
             if (!confirm("Are you sure you want to delete this listing?")) return;
@@ -445,11 +454,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                             Listing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#footer">Contact Us</a>
+                        <a class="nav-link" href="about.php">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.php">Contact Us</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="profile.php">Profile</a>
                     </li>
+                    
                 </ul>
                 &nbsp
                 <form action="" method="POST" class="d-inline">
@@ -679,40 +692,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         </div>
     </div>
 
-    <footer id="footer" class="bg-light text-dark py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Contact Us</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="bi bi-geo-alt"></i> 123 Main Street, City, Country</li>
-                        <li><i class="bi bi-telephone"></i> +1 (555) 123-4567</li>
-                        <li><i class="bi bi-envelope"></i> <a href="mailto:info@example.com"
-                                class="text-black">info@example.com</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Follow Us</h5>
-                    <ul class="list-unstyled d-flex justify-content-left">
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-facebook"></i></a></li>
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-twitter"></i></a></li>
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-instagram"></i></a></li>
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-linkedin"></i></a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>About Us</h5>
-                    <p>We are committed to helping you find your dream home. Our team is dedicated to providing the best
-                        service possible.</p>
-                </div>
+    <footer class="bg-dark text-light py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 text-center mb-3">
+                <h5>Your Trusted Real Estate Partner</h5>
+                <p>Providing exceptional service in residential and commercial real estate.</p>
             </div>
-            <div class="text-center mt-4">
-                <small>&copy; 2024 Real Estate Listings. All rights reserved.</small>
+            <div class="col-md-4 text-center mb-3">
+                <h5>Follow Us</h5>
+                <ul class="list-unstyled d-flex justify-content-center">
+                    <li class="mx-2"><a href="https://www.facebook.com/login.php/" class="text-light"><i class="bi bi-facebook"></i></a></li>
+                    <li class="mx-2"><a href="https://x.com/login-to/" class="text-light"><i class="bi bi-twitter"></i></a></li>
+                    <li class="mx-2"><a href="https://www.instagram.com/" class="text-light"><i class="bi bi-instagram"></i></a></li>
+                    <li class="mx-2"><a href="https://www.linkedin.com/home" class="text-light"><i class="bi bi-linkedin"></i></a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+                <h5>Stay Connected</h5>
+                <p>Join our community for the latest updates and property listings.</p>
             </div>
         </div>
-    </footer>
+        <div class="text-center mt-4">
+            <p>&copy; 2024 Your Real Estate Company. All rights reserved.</p>
+            <p><small>Privacy Policy | Terms of Service</small></p>
+        </div>
+    </div>
+</footer>
+
+              
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
 </body>
 
 </html>

@@ -481,11 +481,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                             Listing</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#footer">Contact Us</a>
+                        <a class="nav-link" href="about.php">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.php">Contact Us</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="profile.php">Profile</a>
-                    </li>
+                    </li>     
                 </ul>
                 &nbsp
                 <form action="" method="POST" class="d-inline">
@@ -671,39 +674,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             </div>
         </div>
     </div>
-
-    <footer id="footer" class="bg-light text-dark py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Contact Us</h5>
-                    <ul class="list-unstyled">
-                        <li><i class="bi bi-geo-alt"></i> 123 Main Street, City, Country</li>
-                        <li><i class="bi bi-telephone"></i> +1 (555) 123-4567</li>
-                        <li><i class="bi bi-envelope"></i> <a href="mailto:info@example.com"
-                                class="text-black">info@example.com</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>Follow Us</h5>
-                    <ul class="list-unstyled d-flex justify-content-left">
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-facebook"></i></a></li>
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-twitter"></i></a></li>
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-instagram"></i></a></li>
-                        <li class="mx-2"><a href="#" class="text-black"><i class="bi bi-linkedin"></i></a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h5>About Us</h5>
-                    <p>We are committed to helping you find your dream home. Our team is dedicated to providing the best
-                        service possible.</p>
-                </div>
+    <footer class="bg-dark text-light py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 text-center mb-3">
+                <h5>Your Trusted Real Estate Partner</h5>
+                <p>Providing exceptional service in residential and commercial real estate.</p>
             </div>
-            <div class="text-center mt-4">
-                <small>&copy; 2024 Real Estate Listings. All rights reserved.</small>
+            <div class="col-md-4 text-center mb-3">
+                <h5>Follow Us</h5>
+                <ul class="list-unstyled d-flex justify-content-center">
+                    <li class="mx-2"><a href="https://www.facebook.com/login.php/" class="text-light"><i class="bi bi-facebook"></i></a></li>
+                    <li class="mx-2"><a href="https://x.com/login-to/" class="text-light"><i class="bi bi-twitter"></i></a></li>
+                    <li class="mx-2"><a href="https://www.instagram.com/" class="text-light"><i class="bi bi-instagram"></i></a></li>
+                    <li class="mx-2"><a href="https://www.linkedin.com/home" class="text-light"><i class="bi bi-linkedin"></i></a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+                <h5>Stay Connected</h5>
+                <p>Join our community for the latest updates and property listings.</p>
             </div>
         </div>
-    </footer>
+        <div class="text-center mt-4">
+            <p>&copy; 2024 Your Real Estate Company. All rights reserved.</p>
+            <p><small>Privacy Policy | Terms of Service</small></p>
+        </div>
+    </div>
+</footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

@@ -1,33 +1,5 @@
 [
     {
-        "id": "1",
-        "title": "Historic Mansion",
-        "price": "5500000",
-        "description": "A grand mansion with rich history and beautiful architecture.",
-        "image_url": "https:\/\/i.imgur.com\/sample7.jpg",
-        "bedrooms": 8,
-        "bathrooms": 7,
-        "square_feet": 8000,
-        "location": "Savannah, GA",
-        "contact_email": "mansion@historichomes.com",
-        "status": "available",
-        "addedby": "asassd"
-    },
-    {
-        "id": "2",
-        "title": "ajaj",
-        "price": "",
-        "description": "",
-        "image_url": "https:\/\/i.imgur.com\/45RURgS.jpeg",
-        "bedrooms": "",
-        "bathrooms": "",
-        "square_feet": "",
-        "location": "",
-        "contact_email": "",
-        "status": "hold",
-        "addedby": "asja"
-    },
-    {
         "id": "3",
         "title": "llla",
         "price": 0,
