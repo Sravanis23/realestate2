@@ -263,9 +263,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         }
     </style>
     <script>
-
-
-
         const serverFilePath = "<?php echo $_SERVER['PHP_SELF']; ?>";
 
         function deleteListing(listingId) {
@@ -295,31 +292,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
 
         function searchListings() {
-    const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const listings = document.getElementsByClassName('listing-card');
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const listings = document.getElementsByClassName('listing-card');
 
-    for (let i = 0; i < listings.length; i++) {
-        const title = listings[i].querySelector('.card-title').textContent.toLowerCase();
-        const description = listings[i].querySelector('.card-body .card-text:nth-of-type(2)').textContent.toLowerCase();
-        const location = listings[i].querySelector('.list-unstyled li:first-child').textContent.toLowerCase();
-        const price = listings[i].querySelector('.card-body .card-text:first-of-type').textContent.toLowerCase();
-        const bedrooms = listings[i].querySelector('.list-unstyled li:nth-child(2)').textContent.toLowerCase();
-        const bathrooms = listings[i].querySelector('.list-unstyled li:nth-child(3)').textContent.toLowerCase();
-        const squareFeet = listings[i].querySelector('.list-unstyled li:nth-child(4)').textContent.toLowerCase();
+            for (let i = 0; i < listings.length; i++) {
+                const title = listings[i].querySelector('.card-title').textContent.toLowerCase();
+                const description = listings[i].querySelector('.card-body .card-text:nth-of-type(2)').textContent
+                    .toLowerCase();
+                const location = listings[i].querySelector('.list-unstyled li:first-child').textContent.toLowerCase();
+                const price = listings[i].querySelector('.card-body .card-text:first-of-type').textContent
+            .toLowerCase();
+                const bedrooms = listings[i].querySelector('.list-unstyled li:nth-child(2)').textContent.toLowerCase();
+                const bathrooms = listings[i].querySelector('.list-unstyled li:nth-child(3)').textContent.toLowerCase();
+                const squareFeet = listings[i].querySelector('.list-unstyled li:nth-child(4)').textContent
+            .toLowerCase();
 
-        if (title.includes(searchInput) || 
-            description.includes(searchInput) || 
-            location.includes(searchInput) ||
-            price.includes(searchInput) ||
-            bedrooms.includes(searchInput) ||
-            bathrooms.includes(searchInput) ||
-            squareFeet.includes(searchInput)) {
-            listings[i].style.display = 'block';
-        } else {
-            listings[i].style.display = 'none';
+                if (title.includes(searchInput) ||
+                    description.includes(searchInput) ||
+                    location.includes(searchInput) ||
+                    price.includes(searchInput) ||
+                    bedrooms.includes(searchInput) ||
+                    bathrooms.includes(searchInput) ||
+                    squareFeet.includes(searchInput)) {
+                    listings[i].style.display = 'block';
+                } else {
+                    listings[i].style.display = 'none';
+                }
+            }
         }
-    }
-}
 
         function deleteListing(listingId) {
             if (!confirm("Are you sure you want to delete this listing?")) return;
@@ -462,7 +462,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                     <li class="nav-item">
                         <a class="nav-link" href="profile.php">Profile</a>
                     </li>
-                    
+
                 </ul>
                 &nbsp
                 <form action="" method="POST" class="d-inline">
@@ -594,9 +594,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
         <!-- Listings Display -->
         <div class="row">
-    <!-- Regular Listings Section -->
-    <?php foreach ($listings as $listing): ?>
-        <?php if ($listing['addedby'] !== $_SESSION['username']): ?>
+            <!-- Regular Listings Section -->
+            <?php foreach ($listings as $listing): ?>
+            <?php if ($listing['addedby'] !== $_SESSION['username']): ?>
             <div class="col-md-3 mb-4 listing-card" data-id="<?= htmlspecialchars($listing['id']) ?>">
                 <div class="card h-100 shadow-sm" style="width: 100%; padding: 0.5rem;">
                     <div class="image-container">
@@ -605,126 +605,141 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                     </div>
                     <div class="status d-flex">
                         <!-- Status display for available, hold, and sold with styling -->
-                        <div class="status col" style="text-align: center; padding: 10px;
+                        <div class="status col"
+                            style="text-align: center; padding: 10px;
                             <?= ($listing['status'] == 'available') ? 'background: linear-gradient(to right, #aae6cf, #28a745); color: white;' : 'background: white; border: 0.5px solid black; color: black;' ?>">
                             <p style="margin: 0;">Available</p>
                         </div>
-                        <div class="status col" style="text-align: center; padding: 10px;
+                        <div class="status col"
+                            style="text-align: center; padding: 10px;
                             <?= ($listing['status'] == 'hold') ? 'background: linear-gradient(to right, #6ec1e4, #1a73e8); color: white;' : 'background: white; border: 0.5px solid black; color: black;' ?>">
                             <p style="margin: 0;">Hold</p>
                         </div>
-                        <div class="status col" style="text-align: center; padding: 10px;
+                        <div class="status col"
+                            style="text-align: center; padding: 10px;
                             <?= ($listing['status'] == 'sold') ? 'background: linear-gradient(to right, #ffccbc, #dc3545); color: white;' : 'background: white; border: 0.5px solid black; color: black;' ?>">
                             <p style="margin: 0;">Sold</p>
                         </div>
                     </div>
                     <div class="card-body" style="padding: 0.5rem;">
-                        <h5 class="card-title" style="font-size: 1.25rem;"><?= htmlspecialchars($listing['title']) ?></h5>
-                        <p class="card-text" style="font-size: 0.9rem;"><strong>Price:</strong> $<?= number_format((float)$listing['price'], 2) ?></p>
-                        <p class="card-text" style="font-size: 0.9rem;"><?= htmlspecialchars($listing['description']) ?></p>
+                        <h5 class="card-title" style="font-size: 1.25rem;"><?= htmlspecialchars($listing['title']) ?>
+                        </h5>
+                        <p class="card-text" style="font-size: 0.9rem;"><strong>Price:</strong>
+                            $<?= number_format((float)$listing['price'], 2) ?></p>
+                        <p class="card-text" style="font-size: 0.9rem;"><?= htmlspecialchars($listing['description']) ?>
+                        </p>
                         <ul class="list-unstyled" style="font-size: 0.9rem;">
                             <li><strong>Location:</strong> <?= htmlspecialchars($listing['location']) ?></li>
                             <li><strong>Bedrooms:</strong> <?= (int)($listing['bedrooms'] ?? 0) ?></li>
                             <li><strong>Bathrooms:</strong> <?= (int)($listing['bathrooms'] ?? 0) ?></li>
-                            <li><strong>Square Feet:</strong> <?= number_format((int)($listing['square_feet'] ?? 0)) ?> sqft</li>
+                            <li><strong>Square Feet:</strong> <?= number_format((int)($listing['square_feet'] ?? 0)) ?>
+                                sqft</li>
                         </ul>
-                        <p style="font-size: 0.9rem;"><strong>Contact:</strong> <a href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a></p>
+                        <p style="font-size: 0.9rem;"><strong>Contact:</strong> <a
+                                href="mailto:<?= htmlspecialchars($listing['contact_email']) ?>"><?= htmlspecialchars($listing['contact_email']) ?></a>
+                        </p>
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
-    <?php endforeach; ?>
-</div>
+            <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
 
 
-    <!-- Modal for Adding Listings -->
-    <div class="modal fade" id="addListingModal" tabindex="-1" aria-labelledby="addListingModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addListingModalLabel">Add New Listing</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="profile.php" method="POST" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="title" name="title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="price" class="form-label">Price</label>
-                            <input type="number" step="0.01" class="form-control" id="price" name="price" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3"
-                                required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Image</label>
-                            <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bedrooms" class="form-label">Bedrooms</label>
-                            <input type="number" class="form-control" id="bedrooms" name="bedrooms" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bathrooms" class="form-label">Bathrooms</label>
-                            <input type="number" class="form-control" id="bathrooms" name="bathrooms" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="square_feet" class="form-label">Square Feet</label>
-                            <input type="number" class="form-control" id="square_feet" name="square_feet" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="location" class="form-label">Location</label>
-                            <input type="text" class="form-control" id="location" name="location" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="contact_email" class="form-label">Contact Email</label>
-                            <input type="email" class="form-control" id="contact_email" name="contact_email" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit Listing</button>
-                    </form>
+        <!-- Modal for Adding Listings -->
+        <div class="modal fade" id="addListingModal" tabindex="-1" aria-labelledby="addListingModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addListingModalLabel">Add New Listing</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="profile.php" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Price</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                    required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="image" class="form-label">Image</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bedrooms" class="form-label">Bedrooms</label>
+                                <input type="number" class="form-control" id="bedrooms" name="bedrooms" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bathrooms" class="form-label">Bathrooms</label>
+                                <input type="number" class="form-control" id="bathrooms" name="bathrooms" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="square_feet" class="form-label">Square Feet</label>
+                                <input type="number" class="form-control" id="square_feet" name="square_feet" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="contact_email" class="form-label">Contact Email</label>
+                                <input type="email" class="form-control" id="contact_email" name="contact_email"
+                                    required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Listing</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
     <footer class="bg-dark text-light py-4">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 text-center mb-3">
-                <h5>Your Trusted Real Estate Partner</h5>
-                <p>Providing exceptional service in residential and commercial real estate.</p>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 text-center mb-3">
+                    <h5>Your Trusted Real Estate Partner</h5>
+                    <p>Providing exceptional service in residential and commercial real estate.</p>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <h5>Follow Us</h5>
+                    <ul class="list-unstyled d-flex justify-content-center">
+                        <li class="mx-2"><a href="https://www.facebook.com/login.php/" class="text-light"><i
+                                    class="bi bi-facebook"></i></a></li>
+                        <li class="mx-2"><a href="https://x.com/login-to/" class="text-light"><i
+                                    class="bi bi-twitter"></i></a></li>
+                        <li class="mx-2"><a href="https://www.instagram.com/" class="text-light"><i
+                                    class="bi bi-instagram"></i></a></li>
+                        <li class="mx-2"><a href="https://www.linkedin.com/home" class="text-light"><i
+                                    class="bi bi-linkedin"></i></a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center mb-3">
+                    <h5>Stay Connected</h5>
+                    <p>Join our community for the latest updates and property listings.</p>
+                </div>
             </div>
-            <div class="col-md-4 text-center mb-3">
-                <h5>Follow Us</h5>
-                <ul class="list-unstyled d-flex justify-content-center">
-                    <li class="mx-2"><a href="https://www.facebook.com/login.php/" class="text-light"><i class="bi bi-facebook"></i></a></li>
-                    <li class="mx-2"><a href="https://x.com/login-to/" class="text-light"><i class="bi bi-twitter"></i></a></li>
-                    <li class="mx-2"><a href="https://www.instagram.com/" class="text-light"><i class="bi bi-instagram"></i></a></li>
-                    <li class="mx-2"><a href="https://www.linkedin.com/home" class="text-light"><i class="bi bi-linkedin"></i></a></li>
-                </ul>
-            </div>
-            <div class="col-md-4 text-center mb-3">
-                <h5>Stay Connected</h5>
-                <p>Join our community for the latest updates and property listings.</p>
+            <div class="text-center mt-4">
+                <p>&copy; 2024 Your Real Estate Company. All rights reserved.</p>
+                <p><small>Privacy Policy | Terms of Service</small></p>
             </div>
         </div>
-        <div class="text-center mt-4">
-            <p>&copy; 2024 Your Real Estate Company. All rights reserved.</p>
-            <p><small>Privacy Policy | Terms of Service</small></p>
-        </div>
-    </div>
-</footer>
+    </footer>
 
-              
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
 
 </body>
 
