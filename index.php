@@ -27,6 +27,7 @@ if (!isset($_SESSION['username']) ||
     exit;
 }
 
+
 // Update last activity time for inactivity check
 $_SESSION['LAST_ACTIVITY'] = time();
 
@@ -457,6 +458,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                         <a class="nav-link" href="about.php">About Us</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="mortgage_calculator.php">Payment Estimator</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="contact.php">Contact Us</a>
                     </li>
                     <li class="nav-item">
@@ -514,6 +518,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             <span class="visually-hidden">Next</span>
         </button>
     </div>
+
+
+<!-- JavaScript to handle form submission and close modal -->
+<script>
+document.getElementById('lifestyleQuizForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Submit the form using an AJAX request
+    fetch('', { // Sending to the same PHP page
+        method: 'POST',
+        body: new FormData(this)
+    })
+    .then(response => response.text())
+    .then(data => {
+        // Refresh the page to display the score
+        location.reload();
+    })
+    .catch(error => console.error('Error:', error));
+
+    // Hide the modal manually
+    const quizModal = bootstrap.Modal.getInstance(document.getElementById('lifestyleQuizModal'));
+    quizModal.hide();
+});
+</script>
+
 
 
     <div class="container my-5">
